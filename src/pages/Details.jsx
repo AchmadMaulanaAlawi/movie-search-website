@@ -58,16 +58,18 @@ export default function Details() {
                     </div>
                     <div className="votes text-zinc-400">({imdbVotes})</div>
                   </div>
-                  <div className="rt-rating flex gap-2 items-center">
-                    <img
-                      className="w-5"
-                      src="src/img/rt.png"
-                      alt="rt-icon"
-                    />
-                    <div className="rating-value text-zinc-100">
-                      {Ratings[1].Value}
+                  {Ratings[1] && (
+                    <div className="rt-rating flex gap-2 items-center">
+                      <img
+                        className="w-5"
+                        src="src/img/rt.png"
+                        alt="rt-icon"
+                      />
+                      <div className="rating-value text-zinc-100">
+                        {Ratings[0].Value}
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
               <div className="details-text grid grid-cols-2 py-4 px-4 gap-4 sm:static absolute top-full left-0">

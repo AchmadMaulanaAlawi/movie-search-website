@@ -1,18 +1,22 @@
 import clsx from "clsx"
-import React, { useEffect, useRef } from "react"
+import React, { useContext, useEffect, useRef } from "react"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import MovieDisplay from "../components/MovieDisplay.jsx"
 import Error from "../components/Error.jsx"
 import { request } from "../functions/request.js"
+import CurrentResponseContext from "../context/CurrentMovieProvider.jsx"
 
 export default function Home() {
   const [onSearchMode, setOnSearchMode] = useState(false)
-  const defaultMovie = "Spider-Man"
-  const [inputValue, setInputValue] = useState(`${defaultMovie}`)
+  const [inputValue, setInputValue] = useState("")
   const inputElement = useRef()
-  const [currentResponse, setCurrentResponse] = useState({})
-  const currentSearched = useRef()
+  const [
+    currentResponse,
+    setCurrentResponse,
+    currentSearched,
+    setCurrentSearched,
+  ] = useContext(CurrentResponseContext)
   const navigate = useNavigate()
   const mediaDataError = currentResponse.Error
   const mediaData = currentResponse.Search || []
@@ -24,37 +28,43 @@ export default function Home() {
 
   async function searchButtonHandler() {
     navigate("/")
-    if (inputValue.length) {
-      const onSmallScreen = window.matchMedia("(max-width: 768px)").matches
-      if (onSmallScreen) {
-        setOnSearchMode(!onSearchMode)
-        if (!onSearchMode) {
-          setTimeout(() => {
-            inputElement.current.focus()
-          }, 400)
-        }
-      }
-      const trimmedInputValue = inputValue.trim()
+
+    const trimmedInputValue = inputValue.trim()
+    setCurrentSearched(trimmedInputValue)
+    setInputValue(trimmedInputValue)
+
+    if (trimmedInputValue.length) {
       const res = await request(trimmedInputValue)
-      setInputValue(trimmedInputValue)
       setCurrentResponse(res)
-      currentSearched.current = trimmedInputValue
-      inputElement.current.blur()
+    }
+    inputElement.current.blur()
+
+    const onSmallScreen = window.matchMedia("(max-width: 768px)").matches
+    if (onSmallScreen) {
+      setOnSearchMode(!onSearchMode)
+      if (!onSearchMode) {
+        setTimeout(() => {
+          inputElement.current.focus()
+        }, 400)
+      }
     }
   }
 
   useEffect(() => {
     async function requestDefault() {
-      const defaultResponse = await request(inputValue)
+      const defaultResponse = await request("Spider-Man")
       setCurrentResponse(defaultResponse)
     }
-    requestDefault()
+    if (!currentResponse.Search) {
+      setInputValue("Spider-Man")
+      requestDefault()
+    }
   }, [])
 
   return (
     <>
       <header>
-        <div className="relative container mx-auto md:py-6 px-6 lg:px-24">
+        <div className="relative container mx-auto md:py-6 py-3 px-6 lg:px-24">
           <div className="relative z-20 mobile-navbar flex min-h-[15vh] justify-between items-center">
             <div
               className={clsx(
@@ -148,12 +158,12 @@ export default function Home() {
             }
           )}
         >
-          {currentSearched.current && (
+          {currentSearched && (
             <div className="mb-6">
               <div className="results-for text-zinc-400">Results for</div>
               <div className="current-searched text-zinc-100 text-3xl">
-                {currentSearched.current.charAt(0).toUpperCase() +
-                  currentSearched.current.slice(1)}
+                {currentSearched.charAt(0).toUpperCase() +
+                  currentSearched.slice(1)}
               </div>
             </div>
           )}

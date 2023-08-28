@@ -7,6 +7,7 @@ import {
 } from "react-router-dom"
 import Home from "./pages/Home.jsx"
 import Details, { detailsLoader } from "./pages/Details.jsx"
+import { CurrentMovieProvider } from "./context/CurrentMovieProvider.jsx"
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -30,7 +31,9 @@ const router = createBrowserRouter(
 function Root() {
   return (
     <div className="bg-slate-950 bg-gradient-to-br from-black min-h-screen overflow-x-hidden h-full flex flex-col">
-      <Outlet />
+      <CurrentMovieProvider>
+        <Outlet />
+      </CurrentMovieProvider>
     </div>
   )
 }

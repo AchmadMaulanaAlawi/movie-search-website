@@ -32,7 +32,6 @@ export default function MovieDisplay({ mediaData }) {
   const pageCount = Math.ceil(filteredItems.length / itemsPerPage)
   const handlePageClick = (event = { selected: 0 }) => {
     const newOffset = (event.selected * itemsPerPage) % filteredItems.length
-
     setItemOffset(newOffset)
   }
 
